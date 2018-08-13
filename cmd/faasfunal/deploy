@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+main() (
+    local cmd="${1}"
+    local cmds="create|update"
+
+    if [[ ! "${cmd}" =~ ^(${cmds})$ ]]; then
+        echo "command must be found in: ${cmds}" >&2
+        return 1
+    fi
+
+    local name="$(basename ${PWD})"
+    local file="main"
+
+    go build -i -o "${file}" || return 1
+    cu1() {
+        rm "${file}"
+    }
+    trap 'cu1' EXIT
+
+    zip --quiet "${file}.zip" "${file}" || return 1
+    cu2() {
+        cu1
+        rm "${file}.zip"
+    }
+    trap 'cu2' EXIT
+
+    create() {
+        local roleRsrc="${1}"
+
+        if [[ "${roleRsrc}" == "" ]]; then
+            echo "role resource must be provided" >&2
+            return 1
+        fi
+
+        aws lambda create-function \
+            --function-name "${name}" \
+            --zip-file fileb://./"${file}.zip" \
+            --region us-west-2 \
+            --handler "${file}" \
+            --runtime go1.x \
+            --role "${roleRsrc}"
+    }
+
+    update() {
+        aws lambda update-function-code \
+            --function-name "${name}" \
+            --zip-file fileb://./"${file}.zip"
+    }
+
+    ${cmd} "${2}"
+)
+
+main "${1}" "${2}"
