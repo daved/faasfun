@@ -1,38 +1,32 @@
 package main
 
 import (
-	"bytes"
-	"context"
+	"fmt"
+	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/daved/faasfun/hellosvc"
 )
 
 func main() {
-	svc := &service{
-		h: hellosvc.Handle,
-	}
-
-	lambda.StartHandler(svc)
+	lambda.Start(f)
 }
 
-type service struct {
-	h hellosvc.Handler
+func f(req helloReq) (helloResp, error) {
+	msg := fmt.Sprintf("Hello from AWS, %s. Have a great day.", req.Name)
+
+	resp := helloResp{
+		Msg:  msg,
+		Time: time.Now().String(),
+	}
+
+	return resp, nil
 }
 
-// Invoke ...
-func (svc *service) Invoke(ctx context.Context, payload []byte) ([]byte, error) {
-	b := bytes.NewBuffer(payload)
+type helloReq struct {
+	Name string `json:"name"`
+}
 
-	r, err := svc.h(ctx, b)
-	if err != nil {
-		return []byte{}, err
-	}
-	b.Reset()
-
-	if _, err = b.ReadFrom(r); err != nil {
-		return []byte{}, err
-	}
-
-	return b.Bytes(), nil
+type helloResp struct {
+	Msg  string `json:"msg"`
+	Time string `json:"time"`
 }
