@@ -9,8 +9,8 @@ main() (
         return 1
     fi
 
-    local name="$(basename ${PWD})"
-    local file="main"
+    local file="$(basename ${PWD})"
+    local name="$(basename $(dirname $(dirname $(dirname ${PWD}))))_${file}"
 
     go build -i -o "${file}" || return 1
     cu1() {
@@ -48,7 +48,7 @@ main() (
             --zip-file fileb://./"${file}.zip"
     }
 
-    ${cmd} "${2}"
+    ${cmd} "${@:2}"
 )
 
 main "${1}" "${2}"
