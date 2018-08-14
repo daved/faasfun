@@ -11,19 +11,19 @@ func main() {
 	lambda.Start(f)
 }
 
-type helloReq struct {
+type request struct {
 	Name string `json:"name"`
 }
 
-type helloResp struct {
+type response struct {
 	Msg  string `json:"msg"`
 	Time string `json:"time"`
 }
 
-func f(req helloReq) (helloResp, error) {
+func f(req request) (response, error) {
 	msg := fmt.Sprintf("Hello from AWS, %s. Have a great day.", req.Name)
 
-	resp := helloResp{
+	resp := response{
 		Msg:  msg,
 		Time: time.Now().String(),
 	}
