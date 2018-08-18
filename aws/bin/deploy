@@ -38,7 +38,7 @@ main() (
     #? create sets up a new aws lambda instance
     create() {
         local func=""
-        local region="us-west-2"
+        local region="$(aws configure get region)"
         local role=""
 
         for ((i=1; i <= ${#@}; i++)); do
@@ -61,7 +61,7 @@ main() (
         done
 
         [[ -z "${func// }" ]] && echo "function name must be provided" >&2 && return 1
-        [[ -z "${region// }" ]] && echo "region must be provided" >&2 && return 1
+        [[ -z "${region// }" ]] && echo "region must be set or in aws config" >&2 && return 1
         [[ -z "${role// }" ]] && echo "role resource must be provided" >&2 && return 1
 
         buildAndZip || return $?
