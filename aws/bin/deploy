@@ -30,7 +30,9 @@ main() (
 
     buildAndZip() {
         go build -i -o "${out}" || return 1
-        zip --quiet "${out}.zip" "${out}" || return 1
+        pushd "${tmpDir}" >/dev/null
+        zip --quiet "${file}.zip" "${file}" || return 1
+        popd >/dev/null
     }
 
     #? create sets up a new aws lambda instance
