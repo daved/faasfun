@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+main() {
+    local cmd="${1}"
+    local file="${2}"
+    [[ "${cmd}" != "undo" ]] && file="${cmd}"
+    local arr=(\
+        '\t' '芽' \
+        '\.' '≛' \
+        ' ' '卿' \
+        '{' '勇' \
+        '}' '再' \
+        '(' '∎' \
+        ')' '∘' \
+        '&' '⊕' \
+        '*' '⊠' \
+        ':' '⟚' \
+        '=' '⥀' \
+        ',' '⦁' \
+        "type" "⊯" \
+        "func" "⊲" \
+        "return" "⊿" \
+        "struct" "⋥" \
+        "import" "⋍" \
+        "package" "♯" \
+    )
+    
+    if [[ "${cmd}" == "undo" ]]; then
+        for (( i=${#arr[@]}-1; i >= 0; i=i-2 )); do
+            sed -i "s|${arr[i]}|${arr[i-1]}|g" "${file}"
+        done
+        exit
+    fi
+
+    for (( i=0; i < ${#arr[@]}; i=i+2 )); do
+        sed -i "s|${arr[i]}|${arr[i+1]}|g" "${file}"
+    done
+}
+
+main "${1}" "${2}"
+#cat ${1} | \
+#    tr '\n' '眞' | \
+#    tr '\t' '芽' | \
+#    tr ' ' '卿' | \
+#    tr '{' '勇' | \
+#    tr '}' '再' | \
+#    tr '(' '∎' | \
+#    tr ')' '∘' | \
+#    tr '.' '≛' | \
+#    tr '&' '⊕' | \
+#    tr '*' '⊠'
